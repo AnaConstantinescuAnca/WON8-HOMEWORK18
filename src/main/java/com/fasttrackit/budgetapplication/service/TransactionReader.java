@@ -1,7 +1,7 @@
 package com.fasttrackit.budgetapplication.service;
 
 import com.fasttrackit.budgetapplication.model.Transaction;
-import com.fasttrackit.budgetapplication.model.Type;
+import com.fasttrackit.budgetapplication.model.TransactionType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -30,6 +30,7 @@ public class TransactionReader {
     private Transaction lineToTransaction(String line) {
         String [] transactionParts = line.split("\\|");
         return new Transaction(Long.parseLong(transactionParts[0]),transactionParts[1],
-                Type.valueOf(transactionParts[2]), Double.parseDouble(transactionParts[3]));
+                TransactionType.valueOf(transactionParts[2]),Double.parseDouble(transactionParts[3]));
+
     }
 }

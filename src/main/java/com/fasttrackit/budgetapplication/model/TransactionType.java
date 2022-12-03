@@ -2,8 +2,8 @@ package com.fasttrackit.budgetapplication.model;
 
 import lombok.Getter;
 
-@Getter
-public enum Type {
+
+public enum TransactionType {
     SELL, BUY;
 
 }
