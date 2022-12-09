@@ -6,90 +6,76 @@ import com.fasttrackit.budgetapplication.model.TransactionType;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class TransactionService {
-    private final List<Transaction> transactions;
     private final TransactionReader transactionReader;
 
+    private final TransactionRepository transactionRepository;
 
-    long increment = 0;
-
-    public TransactionService(TransactionReader transactionReader) {
+    public TransactionService(TransactionReader transactionReader, TransactionRepository transactionRepository) {
 
         this.transactionReader = transactionReader;
-        transactions = transactionReader.getTransactions();
+        this.transactionRepository = transactionRepository;
+        transactionRepository.saveAll(transactionReader.getTransactions());
 
     }
 
     //GET /transactions - get all transactions.
-    // Make it filterable by product , type, minAmount, maxAmount
-    public List<Transaction> getAll(String product, TransactionType type, Double minAmount, Double maxAmount) {
-        Stream<Transaction> stream = transactions.stream();
-        if (product != null) {
-            stream = stream.filter(transaction -> transaction.getProduct().equals(product));
-        }
-        if (type != null) {
-            stream = stream.filter(transaction -> transaction.getType().equals(type));
-        }
-        if (minAmount != null) {
-            stream = stream.filter(transaction -> transaction.getAmount() >= minAmount);
-        }
-        if (maxAmount != null) {
-            stream = stream.filter(transaction -> transaction.getAmount() <= maxAmount);
-        }
+    public List<Transaction> getAll() {
 
-        return stream.collect(Collectors.toList());
+        return transactionRepository.findAll();
 
     }
 
+    public List<Transaction> getByProduct(String product) {
+
+        return transactionRepository.findByProduct(product);
+        // return transactionRepository.findByProductByQuery(product);
+    }
+
+    //byType
+    public List<Transaction> getByType(String type) {
+
+        return transactionRepository.findByType(TransactionType.valueOf(type));
+    }
+
+    //by minAmount
+    public List<Transaction> getByMinAmount(Double minAmount) {
+        return transactionRepository.findByMinAmountQuery(minAmount);
+
+    }
 
     public Transaction getById(Long id) {
-        return transactions.stream()
-                .filter(t -> t.getId() == id)
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("Product missing", id));
+        //return transactionRepository.getReferenceById(id);
+        return transactionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction not found", id));
     }
 
-
-    //
     public Transaction add(Transaction transaction) {
-        Transaction newTransaction = Transaction.builder()
-                .product(transaction.getProduct())
-                .type(transaction.getType())
-                .amount(transaction.getAmount())
-                .id(transaction.getId()).build();
-        transactions.add(newTransaction);
-        return newTransaction;
+        return transactionRepository.save(transaction);
     }
 
     public Transaction update(long id, Transaction transaction) {
 
         Transaction transactionToBeUpdated = getById(id);
         transactionToBeUpdated.setProduct(transaction.getProduct());
-        //?! nu pot face SET pe type pt ca e ENUM
-        // transactionToBeUpdated.setType(TransactionType.SELL);
-
         transactionToBeUpdated.setAmount(transaction.getAmount());
 
         return transactionToBeUpdated;
     }
 
-    public Transaction delete(long id) {
+    public Transaction deleteById(long id) {
         Transaction transactionToBeDeleted = getById(id);
-        transactions.remove(transactionToBeDeleted);
+        transactionRepository.deleteById(id);
         return transactionToBeDeleted;
-
     }
 
-    public Map<TransactionType, List<Transaction>> getTransactionsByType() {
-        return transactions.stream().collect(Collectors.groupingBy(Transaction::getType));
-    }
-
-    public Map<String, List<Transaction>> getTransactionsByProduct() {
-        return transactions.stream().collect(Collectors.groupingBy(Transaction::getProduct));
-    }
+//    public Map<TransactionType, List<Transaction>> getTransactionsByType() {
+//        return transactions.stream().collect(Collectors.groupingBy(Transaction::getType));
+//    }
+//
+//    public Map<String, List<Transaction>> getTransactionsByProduct() {
+//        return transactions.stream().collect(Collectors.groupingBy(Transaction::getProduct));
+//    }
 }

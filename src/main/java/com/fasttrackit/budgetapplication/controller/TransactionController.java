@@ -9,21 +9,49 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
-//@RequiredArgsConstructor
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("transactions")  //http://host:port/transactions
 public class TransactionController {
     private final TransactionService transactionService;
 
-    @GetMapping
-    public List<Transaction> getAll(@RequestParam(required = false) String product,
-                                    @RequestParam(required = false) TransactionType type,
-                                    @RequestParam(required = false) Double minAmount,
-                                    @RequestParam(required = false) Double maxAmount) {
-        return transactionService.getAll(product, type, minAmount, maxAmount);
+    //GET /transactions - get all transactions.
+    // Make it filterable by type, minAmount, maxAmount
+    // (you will have 6 filtering methods in repository: byType, byMinAmount, byMaxAmout,
+    // byTypeAndMin, byTypeAndMax, byMinAndMax, byTypeAndMinAndMax)
+    @GetMapping()    //http://host:port/transactions?product=notebook
+    public List<Transaction> getAll(@RequestParam(required = false) String product){
+
+        if(product != null){
+            return  transactionService.getByProduct(product);
+        }
+        else {
+            return transactionService.getAll();
+        }
     }
+
+    @GetMapping("type") // http://host:port/transactions/type?type=SELL
+    public List<Transaction> getType(@RequestParam(required = false ) String val){
+
+            return  transactionService.getByType(val);
+    }
+
+    @GetMapping("minAmount/{value}") // http:6060/transation/minAmount/100
+    public List<Transaction> getAll(@PathVariable Double value){
+
+            return transactionService.getByMinAmount(value);
+
+    }
+//    public List<Transaction> getAll(@RequestParam(required = false) String product,
+//                                    @RequestParam(required = false) TransactionType type,
+//                                    @RequestParam(required = false) Double minAmount,
+//                                    @RequestParam(required = false) Double maxAmount) {
+//
+//       return transactionService.getAll(product, type, minAmount, maxAmount);
+//    }
+
 
     //GET /transactions/{id} - get transaction with id
     @GetMapping("{id}")  //GET  http://host:port/transactions/3
@@ -46,19 +74,19 @@ public class TransactionController {
     //DELETE /transactions/{id} - deletes the transaction with id
     @DeleteMapping("{id}")
     public Transaction delete(@PathVariable long id) {
-        return transactionService.delete(id);
+        return transactionService.deleteById(id);
     }
 
-//    GET /transactions/reports/type -> returns a map from type to list of transactions of that type
-    @GetMapping("reports/type")
-    public Map<TransactionType,List<Transaction>> reportByType(){
-        return transactionService.getTransactionsByType();
-    }
-
-
-//    GET /transactions/reports/product -> returns a map from product to list of transactions for that product
-    @GetMapping("reports/product")
-    public  Map<String,List<Transaction>> reportByProduct(){
-        return transactionService.getTransactionsByProduct();
-    }
+    //    GET /transactions/reports/type -> returns a map from type to list of transactions of that type
+//    @GetMapping("reports/type")
+//    public Map<TransactionType, List<Transaction>> reportByType() {
+//        return transactionService.getTransactionsByType();
+//    }
+//
+//
+//    //    GET /transactions/reports/product -> returns a map from product to list of transactions for that product
+//    @GetMapping("reports/product")
+//    public Map<String, List<Transaction>> reportByProduct() {
+//        return transactionService.getTransactionsByProduct();
+//    }
 }
