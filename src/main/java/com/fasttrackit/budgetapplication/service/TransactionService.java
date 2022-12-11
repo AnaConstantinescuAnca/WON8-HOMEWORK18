@@ -21,11 +21,19 @@ public class TransactionService {
 
     }
 
+
     //GET /transactions - get all transactions.
-    public List<Transaction> getAll() {
+    public List<Transaction> getAll(TransactionType type, Double minAmount, Double maxAmount) {
+        if (type != null && minAmount == null && maxAmount == null) {
+            return transactionRepository.findByType(type);
+        } else if (minAmount != null && type == null && maxAmount == null) {
 
+            return transactionRepository.findByMinAmountQuery(minAmount);
+        } else if (maxAmount != null && minAmount == null && type == null) {
+
+            return transactionRepository.findByMaxAmountQuery(maxAmount);
+        }
         return transactionRepository.findAll();
-
     }
 
     public List<Transaction> getByProduct(String product) {
