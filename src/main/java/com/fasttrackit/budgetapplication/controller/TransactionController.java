@@ -27,30 +27,32 @@ public class TransactionController {
                                     @RequestParam(required = false) Double maxAmount) {
 
 
-        if (type != null && minAmount != null && maxAmount != null) {
-            return transactionService.getByTypeAndMinAndMax(type.toString(), minAmount, maxAmount);
-        }
-
         if (type != null) {
             if (minAmount != null) {
+                if (maxAmount != null) {
+                    return transactionService.getByTypeAndMinAndMax(type.toString(), minAmount, maxAmount);
+                }
                 return transactionService.getByTypeAndMin(type.toString(), minAmount);
+            } else {
+                if (maxAmount != null) {
+                    return transactionService.getByTypeAndMax(type.toString(), maxAmount);
+                }
+                return transactionService.getByType(String.valueOf(type));
             }
-            return transactionService.getByType(String.valueOf(type));
-        }
-        if (minAmount != null) {
-            if (maxAmount != null) {
-                return transactionService.getByMinAndMax(minAmount, maxAmount);
-            }
-            return transactionService.getByMinAmount(minAmount);
-        }
 
-        if (maxAmount != null) {
-            if (type != null) {
-                return transactionService.getByTypeAndMax(type.toString(), maxAmount);
+        } else {
+            if (minAmount != null) {
+                if (maxAmount != null) {
+                    return transactionService.getByMinAndMax(minAmount, maxAmount);
+                }
+                return transactionService.getByMinAmount(minAmount);
+            } else {
+                if (maxAmount != null) {
+                    return transactionService.getByMaxAmount(maxAmount);
+                }
+                return transactionService.getAll(type, minAmount, maxAmount);
             }
-            return transactionService.getByMaxAmount(maxAmount);
         }
-        return transactionService.getAll(type, minAmount, maxAmount);
     }
 
 
@@ -90,7 +92,7 @@ public class TransactionController {
     }
 
     //    GET /transactions/reports/type -> returns a map from type to list of transactions of that type
-//   @GetMapping("reports/type")
+//  @GetMapping("reports/type")
 //    public Map<TransactionType, List<Transaction>> reportByType() {
 //        return transactionService.getTransactionsByType();
 //    }
