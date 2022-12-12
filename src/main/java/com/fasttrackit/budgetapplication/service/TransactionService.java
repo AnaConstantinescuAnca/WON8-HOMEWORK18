@@ -6,6 +6,7 @@ import com.fasttrackit.budgetapplication.model.TransactionType;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TransactionService {
@@ -36,11 +37,6 @@ public class TransactionService {
         return transactionRepository.findByType(TransactionType.valueOf(type));
     }
 
-    //byTypeAndMin
-    public List<Transaction> getByTypeAndMin(String type, Double minAmount){
-        return transactionRepository.findByTypeAndMin(type, minAmount);
-    }
-
     //by minAmount
     public List<Transaction> getByMinAmount(Double minAmount) {
         return transactionRepository.findByMinAmountQuery(minAmount);
@@ -55,9 +51,23 @@ public class TransactionService {
     public List<Transaction> getByMinAndMax(Double minAmount, Double maxAmount){
         return transactionRepository.findByMinAndMax(minAmount, maxAmount);
     }
-//    public List<Transaction> getByTypeAndMin(String type, Double minAmount){
-//        return transactionRepository.findByTypeAndMin(type,minAmount);
-//    }
+
+    //byTypeAndMin
+    public List<Transaction> getByTypeAndMin(String type, Double minAmount){
+        return transactionRepository.findByTypeAndMin(TransactionType.valueOf(type), minAmount);
+    }
+
+    //byTypeAndMax
+    public List<Transaction> getByTypeAndMax(String type, Double maxAmount){
+        return transactionRepository.findByTypeAndMax(TransactionType.valueOf(type), maxAmount);
+    }
+
+    //byTypeAndMinAndMax
+    public List<Transaction> getByTypeAndMinAndMax(String type, Double minAmount, Double maxAmount){
+        return transactionRepository.findByTypeAndMinAndMax(TransactionType.valueOf(type), minAmount, maxAmount);
+    }
+
+
 
     public Transaction getById(Long id) {
         //return transactionRepository.getReferenceById(id);
@@ -84,7 +94,8 @@ public class TransactionService {
 
 
 //    public Map<TransactionType, List<Transaction>> getTransactionsByType() {
-//        return transactions.stream().collect(Collectors.groupingBy(Transaction::getType));
+//        return transactionRepository.groupByType();
+//        //return transactions.stream().collect(Collectors.groupingBy(Transaction::getType));
 //    }
 //
 //    public Map<String, List<Transaction>> getTransactionsByProduct() {

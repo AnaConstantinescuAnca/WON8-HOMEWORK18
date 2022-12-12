@@ -26,23 +26,30 @@ public class TransactionController {
                                     @RequestParam(required = false) Double minAmount,
                                     @RequestParam(required = false) Double maxAmount) {
 
-        if (type!=null){
-            if (minAmount!=null){
-               return transactionService.getByTypeAndMin(String.valueOf(type), minAmount);
+
+        if (type != null && minAmount != null && maxAmount != null) {
+            return transactionService.getByTypeAndMinAndMax(type.toString(), minAmount, maxAmount);
+        }
+
+        if (type != null) {
+            if (minAmount != null) {
+                return transactionService.getByTypeAndMin(type.toString(), minAmount);
             }
             return transactionService.getByType(String.valueOf(type));
         }
         if (minAmount != null) {
-           if (maxAmount!=null){
-               return transactionService.getByMinAndMax(minAmount, maxAmount);
-           }
+            if (maxAmount != null) {
+                return transactionService.getByMinAndMax(minAmount, maxAmount);
+            }
             return transactionService.getByMinAmount(minAmount);
         }
 
         if (maxAmount != null) {
+            if (type != null) {
+                return transactionService.getByTypeAndMax(type.toString(), maxAmount);
+            }
             return transactionService.getByMaxAmount(maxAmount);
         }
-
         return transactionService.getAll(type, minAmount, maxAmount);
     }
 
@@ -57,7 +64,6 @@ public class TransactionController {
     public List<Transaction> getAll(@PathVariable Double value) {
         return transactionService.getByMinAmount(value);
     }
-
 
     //GET /transactions/{id} - get transaction with id
     @GetMapping("{id}")  //GET  http://host:port/transactions/3
@@ -84,7 +90,7 @@ public class TransactionController {
     }
 
     //    GET /transactions/reports/type -> returns a map from type to list of transactions of that type
-//    @GetMapping("reports/type")
+//   @GetMapping("reports/type")
 //    public Map<TransactionType, List<Transaction>> reportByType() {
 //        return transactionService.getTransactionsByType();
 //    }

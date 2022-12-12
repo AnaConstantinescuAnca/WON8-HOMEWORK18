@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
@@ -21,13 +22,19 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     //@Query("select t from Transaction t where t.type =:value")
     List<Transaction> findByType(TransactionType type);
 
-    @Query("select t from Transaction where t.type=:type and t.amount>=:minAmount")
-    List<Transaction> findByTypeAndMin(@Param("type") String type, @Param("minAmount") Double minAmount);
+    //byTypeAndMin
+    @Query("select t from Transaction t where t.type=:type and t.amount>=:minAmount")
+    List<Transaction> findByTypeAndMin(@Param("type") TransactionType type, @Param("minAmount") Double minAmount);
 
+    //byTypeAndMax
+    @Query("select t from Transaction t where t.type=:type and t.amount<=:maxAmount")
+    List<Transaction> findByTypeAndMax(@Param("type") TransactionType type, @Param("maxAmount") Double maxAmount);
 
+    //byMinAmount
     @Query("select t from Transaction t where t.amount >=:minAmount")
     List<Transaction> findByMinAmountQuery(@Param("minAmount") Double value);
 
+    //byMaxAmount
     @Query("select t from Transaction t where t.amount<=:maxAmount")
     List<Transaction> findByMaxAmountQuery(@Param("maxAmount") Double maxAmount);
 
@@ -35,14 +42,19 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     @Query("select t from Transaction t where t.amount>=:minAmount and t.amount<=:maxAmount")
     List<Transaction> findByMinAndMax(@Param("minAmount") Double minAmount,
                                       @Param("maxAmount") Double maxAmount);
-    // byTypeAndMin
-//    @Query("select t from Transaction where t.type=:type and t.amount>=:minAmount")
-//    List<Transaction> findByTypeAndMin(@Param("type") String type, @Param("minAmount") Double minAmount);
+    // byTypeAndMinAndMax
+    @Query("select t from Transaction t where t.type=:type and t.amount>=:minAmount and t.amount<=:maxAmount")
+    List<Transaction> findByTypeAndMinAndMax(@Param("type") TransactionType type,
+                                       @Param("minAmount") Double minAmount,
+                                       @Param("maxAmount") Double maxAmount);
+
+
+    //@Query("select t from Transaction t group by t.type")
+//    Map<TransactionType, List<Transaction>> groupByType();
 
     //GET /transactions - get all transactions.
     // Make it filterable by type, minAmount, maxAmount
     // (you will have 6 filtering methods in repository: byType, byMinAmoun, byMaxAmout,
     // byTypeAndMin, byTypeAndMax, byMinAndMax, byTypeAndMinAndMax)
-
 
 }
