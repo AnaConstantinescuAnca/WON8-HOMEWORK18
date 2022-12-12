@@ -16,15 +16,28 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     List<Transaction> findByProduct(String product);
 
     @Query("select t from Transaction t where t.product=:name")
-    List<Transaction> findByProductByQuery(@Param("name")String product);
+    List<Transaction> findByProductByQuery(@Param("name") String product);
 
     //@Query("select t from Transaction t where t.type =:value")
     List<Transaction> findByType(TransactionType type);
 
-   @Query("select t from Transaction t where t.amount <=:minAmount")
+    @Query("select t from Transaction where t.type=:type and t.amount>=:minAmount")
+    List<Transaction> findByTypeAndMin(@Param("type") String type, @Param("minAmount") Double minAmount);
+
+
+    @Query("select t from Transaction t where t.amount >=:minAmount")
     List<Transaction> findByMinAmountQuery(@Param("minAmount") Double value);
 
+    @Query("select t from Transaction t where t.amount<=:maxAmount")
+    List<Transaction> findByMaxAmountQuery(@Param("maxAmount") Double maxAmount);
 
+    //byMinAndMax
+    @Query("select t from Transaction t where t.amount>=:minAmount and t.amount<=:maxAmount")
+    List<Transaction> findByMinAndMax(@Param("minAmount") Double minAmount,
+                                      @Param("maxAmount") Double maxAmount);
+    // byTypeAndMin
+//    @Query("select t from Transaction where t.type=:type and t.amount>=:minAmount")
+//    List<Transaction> findByTypeAndMin(@Param("type") String type, @Param("minAmount") Double minAmount);
 
     //GET /transactions - get all transactions.
     // Make it filterable by type, minAmount, maxAmount
