@@ -49,8 +49,11 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                                        @Param("maxAmount") Double maxAmount);
 
 
-    //@Query("select t from Transaction t group by t.type")
-//    Map<TransactionType, List<Transaction>> groupByType();
+    @Query("select t.type, sum(t.amount) from Transaction t group by t.type")
+    Map<TransactionType, Double> groupByType();
+
+    @Query("select t.product, sum(t.amount) from Transaction t group by t.product")
+    Map<String, List<Transaction>> groupByProduct();
 
     //GET /transactions - get all transactions.
     // Make it filterable by type, minAmount, maxAmount

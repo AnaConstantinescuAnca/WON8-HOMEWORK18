@@ -26,7 +26,6 @@ public class TransactionController {
                                     @RequestParam(required = false) Double minAmount,
                                     @RequestParam(required = false) Double maxAmount) {
 
-
         if (type != null) {
             if (minAmount != null) {
                 if (maxAmount != null) {
@@ -54,7 +53,6 @@ public class TransactionController {
             }
         }
     }
-
 
 //    @GetMapping("type") // http://host:port/transactions/type?val=SELL
 //    public List<Transaction> getType(@RequestParam(required = false) String val) {
@@ -91,16 +89,16 @@ public class TransactionController {
         return transactionService.deleteById(id);
     }
 
-    //    GET /transactions/reports/type -> returns a map from type to list of transactions of that type
-//  @GetMapping("reports/type")
-//    public Map<TransactionType, List<Transaction>> reportByType() {
-//        return transactionService.getTransactionsByType();
-//    }
-//
-//
-//    //    GET /transactions/reports/product -> returns a map from product to list of transactions for that product
-//    @GetMapping("reports/product")
-//    public Map<String, List<Transaction>> reportByProduct() {
-//        return transactionService.getTransactionsByProduct();
-//    }
+    //   GET /transactions/reports/type -> returns a map from type to sum of amount -
+    //   the processing is done in memory, not in the database. you can try making another implementation with calculations in db
+    @GetMapping("reports/type")
+    public Map<TransactionType, List<Transaction>> reportByType() {
+        return transactionService.getTransactionsByType();
+    }
+
+    //   GET /transactions/reports/product -> returns a map from product to sum of amount
+    @GetMapping("reports/product")
+    public Map<String, List<Transaction>> reportByProduct() {
+        return transactionService.getTransactionsByProduct();
+    }
 }

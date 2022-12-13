@@ -12,6 +12,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Getter
 @Setter
+//@Builder(toBuilder = true)
 //@Data    // le cuprinde pe toate cele de sus
 @Entity
 public class Transaction {
