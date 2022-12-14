@@ -26,33 +26,10 @@ public class TransactionController {
                                     @RequestParam(required = false) Double minAmount,
                                     @RequestParam(required = false) Double maxAmount) {
 
-        if (type != null) {
-            if (minAmount != null) {
-                if (maxAmount != null) {
-                    return transactionService.getByTypeAndMinAndMax(type.toString(), minAmount, maxAmount);
-                }
-                return transactionService.getByTypeAndMin(type.toString(), minAmount);
-            } else {
-                if (maxAmount != null) {
-                    return transactionService.getByTypeAndMax(type.toString(), maxAmount);
-                }
-                return transactionService.getByType(String.valueOf(type));
-            }
-
-        } else {
-            if (minAmount != null) {
-                if (maxAmount != null) {
-                    return transactionService.getByMinAndMax(minAmount, maxAmount);
-                }
-                return transactionService.getByMinAmount(minAmount);
-            } else {
-                if (maxAmount != null) {
-                    return transactionService.getByMaxAmount(maxAmount);
-                }
-                return transactionService.getAll(type, minAmount, maxAmount);
-            }
-        }
+        return transactionService.getTransactionsFiltered(type, minAmount, maxAmount);
     }
+
+
 
 //    @GetMapping("type") // http://host:port/transactions/type?val=SELL
 //    public List<Transaction> getType(@RequestParam(required = false) String val) {

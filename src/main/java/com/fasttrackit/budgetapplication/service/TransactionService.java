@@ -30,6 +30,36 @@ public class TransactionService {
         return transactionRepository.findAll();
     }
 
+    public List<Transaction> getTransactionsFiltered(TransactionType type, Double minAmount, Double maxAmount) {
+        if (type != null) {
+            if (minAmount != null) {
+                if (maxAmount != null) {
+                    return getByTypeAndMinAndMax(type.toString(), minAmount, maxAmount);
+                }
+                return getByTypeAndMin(type.toString(), minAmount);
+            } else {
+                if (maxAmount != null) {
+                    return getByTypeAndMax(type.toString(), maxAmount);
+                }
+                return getByType(String.valueOf(type));
+            }
+
+        } else {
+            if (minAmount != null) {
+                if (maxAmount != null) {
+                    return getByMinAndMax(minAmount, maxAmount);
+                }
+                return getByMinAmount(minAmount);
+            } else {
+                if (maxAmount != null) {
+                    return getByMaxAmount(maxAmount);
+                }
+                return getAll(type, minAmount, maxAmount);
+            }
+        }
+    }
+
+
     public List<Transaction> getByProduct(String product) {
         return transactionRepository.findByProduct(product);
     }
@@ -84,7 +114,7 @@ public class TransactionService {
         Transaction transactionToBeUpdated = getById(id);
         transactionToBeUpdated.setProduct(transaction.getProduct());
         transactionToBeUpdated.setAmount(transaction.getAmount());
-        return transactionToBeUpdated;
+        return transactionRepository.save(transactionToBeUpdated);
     }
 
     public Transaction deleteById(long id) {
@@ -92,6 +122,7 @@ public class TransactionService {
         transactionRepository.deleteById(id);
         return transactionToBeDeleted;
     }
+
 
     public Map<TransactionType, List<Transaction>> getTransactionsByType() {
         return transactionReader.getTransactions()
